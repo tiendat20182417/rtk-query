@@ -1,58 +1,75 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import React from 'react'
 
-function App() {
+import {
+  useAddContactMutation,
+  useDeleteContactMutation,
+  useGetContactQuery,
+  useUpdateContactMutation,
+} from './services/contactsApi'
+import GetContactById from './components/GetContactById'
+import { ContactType } from './type/type'
+
+const App = () => {
+  const { data, isError, isFetching, isLoading, isSuccess } = useGetContactQuery()
+
+  const [addContact] = useAddContactMutation()
+  const contact = {
+    id: '1',
+    name: 'datadd',
+    email: 'dat@gmail.com',
+  }
+  const addHandle = async () => {
+    await addContact(contact)
+  }
+
+  const [updateContact] = useUpdateContactMutation()
+  const contactUpdate = {
+    id: '1',
+    name: 'datupdate',
+    email: 'dat@gmail.com',
+  }
+  const updateHandle = async () => {
+    await updateContact(contactUpdate)
+  }
+
+  const [deleteContact] = useDeleteContactMutation()
+
+  const deleteHandle = () => {
+    deleteContact('1')
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
+    <div className="flex flex-col justify-center items-center  bg-red-400">
+      <h1 className="text-5xl font-bold mb-10">RTK Query</h1>
+      <div>
+        <button className="bg-yellow-400 border-2 border-black p-2 rounded-lg my-4" onClick={addHandle}>
+          Add
+        </button>
+        <button className="bg-yellow-400 border-2 border-black p-2 rounded-lg my-4" onClick={updateHandle}>
+          Update
+        </button>
+        <button className="bg-yellow-400 border-2 border-black p-2 rounded-lg my-4" onClick={deleteHandle}>
+          Delete
+        </button>
+      </div>
+
+      {isLoading && <h2>...loading</h2>}
+      {isFetching && <h2>...fetching</h2>}
+      {isError && <h2>...error</h2>}
+      {isSuccess && (
+        <>
+          {data.map((item: ContactType) => (
+            <>
+              <div className="mt-8 text-xl font-bold" key={item.id}>
+                {item.name}
+              </div>
+              <GetContactById id={item.id} />
+            </>
+          ))}
+        </>
+      )}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
